@@ -1,9 +1,9 @@
-DEFAULT_BLACKLIST_TAGS = [
+DEFAULT_BLACKLIST_TAGS = (
     'script',
     'time'
-]
+)
 
-DEFAULT_UNWRAPLIST_TAGS = [
+DEFAULT_UNWRAPLIST_TAGS = (
     'div',
     'p',
     'span',
@@ -11,7 +11,7 @@ DEFAULT_UNWRAPLIST_TAGS = [
     'article',
     'header',
     'footer'
-]
+)
 
 def remove_buzz_attrs(soup):
     """Remove all attributes except some special tags."""
