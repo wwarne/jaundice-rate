@@ -34,8 +34,17 @@ async def test_success(cli, mocker):
     response = await cli.get('/?urls=http://example/')
     assert response.status == 200
     r_json = await response.json()
-    r_json = r_json[0]
-    assert r_json['status'] == ProcessingStatus.OK.value
-    assert r_json['url'] == 'http://example/'
-    assert str(r_json['score']) == '33.33'
-    assert r_json['word_count'] == 3
+    main_result = r_json[0]
+    assert main_result['status'] == ProcessingStatus.OK.value
+    assert main_result['url'] == 'http://example/'
+    assert str(main_result['score']) == '33.33'
+    assert main_result['word_count'] == 3
+
+
+async def test_few_urls(cli, mocker):
+    mocked_f = mocker.patch('main.fetch')
+    mocked_f.side_effect = fetch_good_html
+    response = await cli.get('/?urls=http://example/,http://another-url')
+    assert response.status == 200
+    r_json = await response.json()
+    assert sorted([item['url'] for item in r_json]) == sorted(['http://example/', 'http://another-url'])
