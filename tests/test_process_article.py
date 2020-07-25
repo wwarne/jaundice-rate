@@ -37,9 +37,6 @@ async def fetch_return_bad_html(*args, **kwargs):
 async def fetch_return_inosmi_html(*args, **kwargs):
     return '<article class="article"><h1>hello</h1> <p>бодрость</p> <p>выходные</p></article>'
 
-@pytest.fixture()
-def mocked_fetch(mocker):
-    return mocker.patch('main.fetch')
 
 @pytest.mark.asyncio
 class TestProcessArticle:

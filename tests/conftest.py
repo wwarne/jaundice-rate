@@ -28,6 +28,11 @@ def inosmi_bad_html():
     return good_article.read_text()
 
 
+@pytest.fixture()
+def mocked_fetch(mocker):
+    return mocker.patch('main.fetch')
+
+
 def pytest_make_parametrize_id(config, val):
     """
     By default for every parametrized option pytest calls _ascii_escaped(val)

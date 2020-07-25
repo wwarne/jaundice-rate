@@ -1,7 +1,7 @@
 import pytest
 from server import configure_server
 from statuses import ProcessingStatus
-from tests.test_process_article import fetch_return_inosmi_html
+from tests.test_process_article import fetch_return_inosmi_html, fetch_return_bad_html
 
 
 
@@ -28,9 +28,18 @@ async def test_more_than_10_urls(cli):
     assert r_json['error']
 
 
-async def test_success(cli, mocker):
-    mocked_f = mocker.patch('main.fetch')
-    mocked_f.side_effect = fetch_return_inosmi_html
+async def test_same_urls_processed_as_one(cli, mocked_fetch):
+    mocked_fetch.side_effect = fetch_return_bad_html
+    response = await cli.get('/?urls=http://example,http://example,http://example')
+    assert response.status == 200
+    r_json = await response.json()
+    assert len(r_json) == 1
+    main_result = r_json[0]
+    assert main_result['url'] == 'http://example'
+
+
+async def test_success(cli, mocked_fetch):
+    mocked_fetch.side_effect = fetch_return_inosmi_html
     response = await cli.get('/?urls=http://example/')
     assert response.status == 200
     r_json = await response.json()
@@ -41,9 +50,8 @@ async def test_success(cli, mocker):
     assert main_result['word_count'] == 3
 
 
-async def test_few_urls(cli, mocker):
-    mocked_f = mocker.patch('main.fetch')
-    mocked_f.side_effect = fetch_return_inosmi_html
+async def test_few_urls(cli, mocked_fetch):
+    mocked_fetch.side_effect = fetch_return_inosmi_html
     response = await cli.get('/?urls=http://example/,http://another-url')
     assert response.status == 200
     r_json = await response.json()
