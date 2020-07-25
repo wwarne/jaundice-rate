@@ -1,5 +1,6 @@
 import asyncio
 import string
+from pathlib import Path
 from typing import List
 
 import pymorphy2
@@ -35,3 +36,20 @@ def calculate_jaundice_rate(article_words, charged_words):
     score = len(found_charged_words) / len(article_words) * 100
 
     return round(score, 2)
+
+
+def load_from_file(filepath: Path) -> List[str]:
+    """Load file into a list. Every line - new element."""
+    with filepath.open(mode='r', encoding='utf-8') as f:
+        return [word.strip() for word in f]
+
+
+def get_charged_words(dict_path: str) -> List[str]:
+    """Loads dictionaries of `charged` words into a memory."""
+    dict_path = Path(dict_path)
+    positive_file = dict_path.joinpath('positive_words.txt')
+    negative_file = dict_path.joinpath('negative_words.txt')
+    total_words = []
+    total_words.extend(load_from_file(positive_file))
+    total_words.extend(load_from_file(negative_file))
+    return total_words
