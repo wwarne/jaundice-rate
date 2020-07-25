@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import pytest
 
+from main import process_article
 from statuses import ProcessingStatus
 
 """
@@ -44,14 +45,14 @@ def mocked_fetch(mocker):
 class TestProcessArticle:
     async def test_request_timeout(self, mocked_fetch):
         """request timeout - server didn't respond for a specified time."""
-        mocked_fetch.side_effect = fetch_has_timeout
+        mocked_fetch.side_effect = emulate_long_running_task
         results = []
         await process_article(
             session=None,
             morph=None,
             charged_words=[],
             url='http://localhost',
-            results=[],
+            results=results,
             request_timeout=0.1,
         )
         assert mocked_fetch.called is True
@@ -70,7 +71,7 @@ class TestProcessArticle:
             morph=None,
             charged_words=[],
             url='http://localhost',
-            results=[],
+            results=results,
             process_timeout=0.1,
         )
         assert mocked_split.called is True
