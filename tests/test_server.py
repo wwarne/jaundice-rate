@@ -1,9 +1,9 @@
 import pytest
 from server import configure_server
 from statuses import ProcessingStatus
+from tests.test_process_article import fetch_return_inosmi_html
 
-async def fetch_good_html(*args, **kwargs):
-    return '<article class="article"><h1>hello</h1> <p>бодрость</p> <p>выходные</p></article>'
+
 
 @pytest.fixture()
 def cli(aiohttp_client, loop):
@@ -30,7 +30,7 @@ async def test_more_than_10_urls(cli):
 
 async def test_success(cli, mocker):
     mocked_f = mocker.patch('main.fetch')
-    mocked_f.side_effect = fetch_good_html
+    mocked_f.side_effect = fetch_return_inosmi_html
     response = await cli.get('/?urls=http://example/')
     assert response.status == 200
     r_json = await response.json()
@@ -43,7 +43,7 @@ async def test_success(cli, mocker):
 
 async def test_few_urls(cli, mocker):
     mocked_f = mocker.patch('main.fetch')
-    mocked_f.side_effect = fetch_good_html
+    mocked_f.side_effect = fetch_return_inosmi_html
     response = await cli.get('/?urls=http://example/,http://another-url')
     assert response.status == 200
     r_json = await response.json()
