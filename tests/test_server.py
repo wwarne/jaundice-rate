@@ -56,3 +56,8 @@ async def test_few_urls(cli, mocked_fetch):
     assert response.status == 200
     r_json = await response.json()
     assert sorted([item['url'] for item in r_json]) == sorted(['http://example/', 'http://another-url'])
+
+async def test_health_handle(cli):
+    response = await cli.get('/health')
+    assert response.status == 200
+    assert await response.text() == 'HEALTHY'

@@ -42,6 +42,10 @@ async def index(request: web.Request) -> web.Response:
     return web.json_response(results)
 
 
+async def health(request: web.Request) -> web.Response:
+    return web.Response(text='HEALTHY')
+
+
 async def create_aiohttp_session(app: web.Application) -> AsyncGenerator[None, None]:
     """
     Reusable aiohttp client session.
@@ -74,6 +78,7 @@ def configure_server(config: Optional[Config] = None) -> web.Application:
     app.cleanup_ctx.append(create_aiohttp_session)
     app.add_routes([
         web.get('/', index, name='index'),
+        web.get('/health', health, name='health'),
     ])
     return app
 
