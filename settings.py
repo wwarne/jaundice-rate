@@ -58,7 +58,9 @@ def _create_parser() -> argparse.ArgumentParser:
 def load_settings(cmd_params: Optional[List[str]] = None) -> Config:
     """Read settings from env variables and command-line arguments."""
     parser = _create_parser()
-    settings = parser.parse_args(args=cmd_params)
+    # NOTE - I used parse_known_args instead of parse_args to play nicely with Gunicorn
+    # Gunicorn parses its own keyword arguments and using parse_args() had broken it.
+    settings, _ = parser.parse_known_args(args=cmd_params)
     return Config(
         port=settings.port,
         request_timeout=settings.request_timeout,
