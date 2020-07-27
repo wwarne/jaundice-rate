@@ -16,6 +16,7 @@ cchardet = "^2.1.6"
 anyio = "^1.4.0"
 async-timeout = "^3.0.1"
 ConfigArgParse = "^1.2.3"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
