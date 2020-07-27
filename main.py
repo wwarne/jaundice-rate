@@ -9,6 +9,7 @@ import async_timeout
 import pymorphy2
 
 from adapters.inosmi_ru import sanitize, ArticleNotFound
+from settings import logger
 from statuses import ProcessingStatus
 from text_tools import split_by_words, calculate_jaundice_rate
 
@@ -18,7 +19,7 @@ def measure_time() -> Generator[None, None, None]:
     start = time.monotonic()
     yield
     elapsed = round(time.monotonic() - start, 2)
-    logging.info(f'Анализ закончен за: {elapsed} сек')
+    logger.info(f'Анализ закончен за: {elapsed} сек')
 
 
 async def fetch(session: aiohttp.ClientSession, url: str) -> str:

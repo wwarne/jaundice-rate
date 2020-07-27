@@ -1,7 +1,7 @@
 import asyncio
 import string
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import pymorphy2
 
@@ -44,7 +44,7 @@ def load_from_file(filepath: Path) -> List[str]:
         return [word.strip() for word in f]
 
 
-def get_charged_words(dict_path: str) -> List[str]:
+def get_charged_words(dict_path: Union[str, Path]) -> List[str]:
     """Loads dictionaries of `charged` words into a memory."""
     dict_path = Path(dict_path)
     positive_file = dict_path.joinpath('positive_words.txt')

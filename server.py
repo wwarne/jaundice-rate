@@ -8,6 +8,7 @@ from aiohttp import web
 
 from main import process_article
 from text_tools import get_charged_words
+from settings import BASE_DIR
 
 
 def split_urls(urls: Optional[str]) -> List[str]:
@@ -55,7 +56,7 @@ async def create_morpher(app: web.Application) -> None:
     app['morpher'] = pymorphy2.MorphAnalyzer()
 
 async def load_charged_words(app: web.Application) -> None:
-    app['charged_words'] = get_charged_words('charged_dict')
+    app['charged_words'] = get_charged_words(BASE_DIR.joinpath('charged_dict'))
 
 def configure_server() -> web.Application:
     app = web.Application()

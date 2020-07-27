@@ -4,7 +4,6 @@ from statuses import ProcessingStatus
 from tests.test_process_article import fetch_return_inosmi_html, fetch_return_bad_html
 
 
-
 @pytest.fixture()
 def cli(aiohttp_client, loop):
     app = configure_server()
