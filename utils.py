@@ -7,7 +7,7 @@ import aiohttp
 import async_timeout
 import pymorphy2
 
-from adapters.inosmi_ru import sanitize, ArticleNotFound
+from adapters import ArticleNotFound, SANITIZERS
 from settings import logger
 from statuses import ProcessingStatus
 from text_tools import split_by_words, calculate_jaundice_rate
@@ -44,7 +44,7 @@ async def process_article(session: aiohttp.ClientSession,
     try:
         async with async_timeout.timeout(request_timeout):
             html = await fetch(session, url)
-        article_text = sanitize(html, plaintext=True)
+        article_text = SANITIZERS['inosmi_ru'](html, plaintext=True)
         with measure_time():
             async with async_timeout.timeout(process_timeout):
                 just_words = await split_by_words(morph, article_text)
