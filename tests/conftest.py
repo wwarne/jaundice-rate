@@ -30,7 +30,7 @@ def inosmi_bad_html():
 
 @pytest.fixture()
 def mocked_fetch(mocker):
-    return mocker.patch('main.fetch')
+    return mocker.patch('utils.fetch')
 
 
 def pytest_make_parametrize_id(config, val):

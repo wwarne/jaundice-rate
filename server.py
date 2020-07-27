@@ -6,7 +6,7 @@ import anyio
 import pymorphy2
 from aiohttp import web
 
-from main import process_article
+from utils import process_article
 from settings import BASE_DIR, load_settings, Config
 from text_tools import get_charged_words
 

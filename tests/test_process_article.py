@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import pytest
 
-from main import process_article
+from utils import process_article
 from statuses import ProcessingStatus
 
 """
@@ -59,7 +59,7 @@ class TestProcessArticle:
     async def test_process_timeout(self, mocked_fetch, mocker):
         """process timeout - we can't process article text for a specified time."""
         mocked_fetch.side_effect = fetch_return_inosmi_html
-        mocked_split = mocker.patch('main.split_by_words')
+        mocked_split = mocker.patch('utils.split_by_words')
         mocked_split.side_effect = emulate_long_running_task
 
         results = []
