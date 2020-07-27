@@ -11,7 +11,7 @@ set -o nounset
 /usr/local/bin/gunicorn server:gunicorn_app_factory \
   --worker-class aiohttp.GunicornWebWorker \
   --workers=4 `# Sync worker settings` \
-  --timeout=30 `# timeout for worker (default = 30) \
+  --timeout=30 `# timeout for worker (default = 30)` \
   --bind='0.0.0.0:8080' `# Run aiohttp on 8080 port` \
   --chdir='/code'       `# Locations` \
   --log-file=- \
