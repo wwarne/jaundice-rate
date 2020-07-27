@@ -146,6 +146,17 @@ version = "0.4.3"
 
 [[package]]
 category = "main"
+description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
+name = "configargparse"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "1.2.3"
+
+[package.extras]
+yaml = ["pyyaml"]
+
+[[package]]
+category = "main"
 description = "Pure-python reader for DAWGs (DAFSAs) created by dawgdic C++ library or DAWG Python extension."
 name = "dawg-python"
 optional = false
@@ -445,7 +456,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "6a2fce6042a4611bd3f4d50ebaa5826dedfd0bd8104310fb0b07411735f2d302"
+content-hash = "809b803afc6bd68cabece1c579c9ba215e09d8be990ed215fce5bcd76157c0a5"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -564,6 +575,9 @@ chardet = [
 colorama = [
     {file = "colorama-0.4.3-py2.py3-none-any.whl", hash = "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff"},
     {file = "colorama-0.4.3.tar.gz", hash = "sha256:e96da0d330793e2cb9485e9ddfd918d456036c7149416295932478192f4436a1"},
+]
+configargparse = [
+    {file = "ConfigArgParse-1.2.3.tar.gz", hash = "sha256:edd17be986d5c1ba2e307150b8e5f5107aba125f3574dddd02c85d5cdcfd37dc"},
 ]
 dawg-python = [
     {file = "DAWG-Python-0.7.2.tar.gz", hash = "sha256:4a5e3286e6261cca02f205cfd5516a7ab10190fa30c51c28d345808f595e3421"},
