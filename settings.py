@@ -21,6 +21,8 @@ class Config:
     request_timeout: float = 2.0
     process_timeout: float = 3.0
     urls_limit: int = 10
+    redis_host: Optional[str] = None
+    redis_port: int = 6379
 
 def _create_parser() -> argparse.ArgumentParser:
     """Creates a parser to process command line arguments."""
