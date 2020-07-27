@@ -1,9 +1,10 @@
 import asyncio
+
 import aiohttp
 import pytest
 
-from utils import process_article
 from statuses import ProcessingStatus
+from utils import process_article
 
 """
 NOTE
@@ -22,17 +23,22 @@ becomes
 -> my_custom_async_func do the thing I want (raises exception, emulate long-running func, etc...)
 """
 
+
 async def fetch_has_broken_connection(*args, **kwargs):
     raise aiohttp.ClientError()
+
 
 async def fetch_has_timeout(*args, **kwargs):
     raise asyncio.TimeoutError()
 
+
 async def emulate_long_running_task(*args, **kwargs):
     await asyncio.sleep(10)
 
+
 async def fetch_return_bad_html(*args, **kwargs):
     return '<html></html>'
+
 
 async def fetch_return_inosmi_html(*args, **kwargs):
     return '<article class="article"><h1>hello</h1> <p>бодрость</p> <p>выходные</p></article>'

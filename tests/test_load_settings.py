@@ -1,5 +1,7 @@
 import pytest
+
 from settings import load_settings, Config
+
 
 @pytest.mark.parametrize('cmd_param, attribute_name, result', [
     ('--port=9999', 'port', 9999),

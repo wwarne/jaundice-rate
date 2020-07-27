@@ -1,4 +1,5 @@
 import pytest
+
 from server import configure_server
 from statuses import ProcessingStatus
 from tests.test_process_article import fetch_return_inosmi_html, fetch_return_bad_html

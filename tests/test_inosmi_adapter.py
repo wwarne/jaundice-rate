@@ -1,5 +1,7 @@
 import pytest
+
 from adapters.inosmi_ru import sanitize, ArticleNotFound
+
 
 def test_sanitize(inosmi_good_html):
     clean_text = sanitize(inosmi_good_html)
@@ -12,6 +14,7 @@ def test_sanitize(inosmi_good_html):
     assert '<a href="' in clean_text
     assert '<h1>' in clean_text
 
+
 def test_sanitize_plain_text(inosmi_good_html):
     clean_plaintext = sanitize(inosmi_good_html, plaintext=True)
     assert 'В субботу, 29 июня, президент США Дональд Трамп' in clean_plaintext
@@ -22,6 +25,7 @@ def test_sanitize_plain_text(inosmi_good_html):
     assert '<h1>' not in clean_plaintext
     assert '</article>' not in clean_plaintext
     assert '<h1>' not in clean_plaintext
+
 
 def test_sanitize_wrong_url(inosmi_bad_html):
     with pytest.raises(ArticleNotFound):

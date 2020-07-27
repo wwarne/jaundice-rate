@@ -6,9 +6,9 @@ import anyio
 import pymorphy2
 from aiohttp import web
 
-from utils import process_article
 from settings import BASE_DIR, load_settings, Config
 from text_tools import get_charged_words
+from utils import process_article
 
 
 def split_urls(urls: Optional[str]) -> List[str]:
