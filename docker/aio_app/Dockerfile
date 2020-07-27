@@ -38,7 +38,7 @@ RUN set -ex \
 
 
 # This is a special case. We need to run this script as an entry point:
-COPY ./docker/gunicorn.sh /docker-gunicorn.sh
+COPY ./docker/aio_app/gunicorn.sh /docker-gunicorn.sh
 # Setting up proper permissions:
 RUN chmod +x '/docker-gunicorn.sh' \
   && groupadd -r web && useradd -d /code -r -g web web \
