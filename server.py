@@ -82,6 +82,11 @@ def configure_server(config: Optional[Config] = None) -> web.Application:
     ])
     return app
 
+async def gunicorn_app_factory() -> web.Application:
+    settings = load_settings()
+    app = configure_server(settings)
+    return app
+
 
 if __name__ == '__main__':
     settings = load_settings()
