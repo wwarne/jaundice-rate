@@ -1,5 +1,5 @@
 import json
-from typing import Optional, List
+from typing import Optional, List, AsyncGenerator
 
 import aiohttp
 import anyio
@@ -42,7 +42,7 @@ async def index(request: web.Request) -> web.Response:
     return web.json_response(results)
 
 
-async def create_aiohttp_session(app: web.Application) -> None:
+async def create_aiohttp_session(app: web.Application) -> AsyncGenerator[None, None]:
     """
     Reusable aiohttp client session.
 
