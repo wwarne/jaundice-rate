@@ -1,5 +1,9 @@
-import pymorphy2
+import asyncio
 import string
+from pathlib import Path
+from typing import List, Union
+
+import pymorphy2
 
 
 def _clean_word(word):
@@ -9,7 +13,7 @@ def _clean_word(word):
     return word
 
 
-def split_by_words(morph, text):
+async def split_by_words(morph: pymorphy2.MorphAnalyzer, text: str) -> List[str]:
     """Учитывает знаки пунктуации, регистр и словоформы, выкидывает предлоги."""
     words = []
     for word in text.split():
@@ -17,17 +21,8 @@ def split_by_words(morph, text):
         normalized_word = morph.parse(cleaned_word)[0].normal_form
         if len(normalized_word) > 2 or normalized_word == 'не':
             words.append(normalized_word)
+        await asyncio.sleep(0)  # release control to not to block event loop entirely
     return words
-
-
-def test_split_by_words():
-    # Экземпляры MorphAnalyzer занимают 10-15Мб RAM т.к. загружают в память много данных
-    # Старайтесь организовать свой код так, чтоб создавать экземпляр MorphAnalyzer заранее и в единственном числе
-    morph = pymorphy2.MorphAnalyzer()
-
-    assert split_by_words(morph, 'Во-первых, он хочет, чтобы') == ['во-первых', 'хотеть', 'чтобы']
-
-    assert split_by_words(morph, '«Удивительно, но это стало началом!»') == ['удивительно', 'это', 'стать', 'начало']
 
 
 def calculate_jaundice_rate(article_words, charged_words):
@@ -43,6 +38,18 @@ def calculate_jaundice_rate(article_words, charged_words):
     return round(score, 2)
 
 
-def test_calculate_jaundice_rate():
-    assert -0.01 < calculate_jaundice_rate([], []) < 0.01
-    assert 33.0 < calculate_jaundice_rate(['все', 'аутсайдер', 'побег'], ['аутсайдер', 'банкротство']) < 34.0
+def load_from_file(filepath: Path) -> List[str]:
+    """Load file into a list. Every line - new element."""
+    with filepath.open(mode='r', encoding='utf-8') as f:
+        return [word.strip() for word in f]
+
+
+def get_charged_words(dict_path: Union[str, Path]) -> List[str]:
+    """Loads dictionaries of `charged` words into a memory."""
+    dict_path = Path(dict_path)
+    positive_file = dict_path.joinpath('positive_words.txt')
+    negative_file = dict_path.joinpath('negative_words.txt')
+    total_words = []
+    total_words.extend(load_from_file(positive_file))
+    total_words.extend(load_from_file(negative_file))
+    return total_words
