@@ -12,7 +12,7 @@ from adapters import ArticleNotFound, SANITIZERS
 from settings import logger
 from statuses import ProcessingStatus
 from text_tools import split_by_words, calculate_jaundice_rate
-
+from settings import logger
 
 @contextmanager
 def measure_time() -> Generator[None, None, None]:
@@ -75,12 +75,13 @@ async def get_from_cache(cache: BaseCache, key: str) -> Optional[Dict]:
     """Loads result from cache and ignore errors."""
     try:
         return await cache.get(key)
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return None
 
 async def set_to_cache(cache: BaseCache, key: str, value: Dict) -> None:
     """Save result to cache and ignore errors."""
     try:
         await cache.set(key, value, ttl=60 * 60)  # cache successful items for an hour
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(e)
