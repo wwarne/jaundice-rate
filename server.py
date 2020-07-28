@@ -78,7 +78,7 @@ async def init_cache(app: web.Application) -> None:
             endpoint=app['config'].redis_host,
             port=app['config'].redis_port,
             namespace='jaundice',
-            serializer=JsonSerializer,
+            serializer=JsonSerializer(),
         )
     else:
         app['cache'] = None
