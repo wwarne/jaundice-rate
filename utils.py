@@ -38,7 +38,7 @@ async def process_article(session: aiohttp.ClientSession,
                           cache: Optional[BaseCache] = None,
                           ) -> None:
     if cache:
-        cached_result = await cache.get(url)
+        cached_result = await get_from_cache(cache, url)
         if cached_result:
             results.append(cached_result)
             return
@@ -67,5 +67,20 @@ async def process_article(session: aiohttp.ClientSession,
         result['score'] = calculate_jaundice_rate(just_words, charged_words)
         result['word_count'] = len(just_words)
         if cache:
-            await cache.set(url, result, ttl=60 * 60)  # cache successful items for an hour
+            await set_to_cache(cache, url, result)
     results.append(result)
+
+
+async def get_from_cache(cache: BaseCache, key: str) -> Optional[Dict]:
+    """Loads result from cache and ignore errors."""
+    try:
+        return await cache.get(key)
+    except Exception:
+        return None
+
+async def set_to_cache(cache: BaseCache, key: str, value: Dict) -> None:
+    """Save result to cache and ignore errors."""
+    try:
+        await cache.set(key, value, ttl=60 * 60)  # cache successful items for an hour
+    except Exception:
+        pass
