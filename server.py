@@ -5,6 +5,8 @@ import aiohttp
 import anyio
 import pymorphy2
 from aiohttp import web
+from aiocache import Cache
+from aiocache.serializers import JsonSerializer
 
 from settings import BASE_DIR, load_settings, Config
 from text_tools import get_charged_words
@@ -38,6 +40,7 @@ async def index(request: web.Request) -> web.Response:
                 results,
                 request.app['config'].request_timeout,
                 request.app['config'].process_timeout,
+                request.app['cache'],
             )
     return web.json_response(results)
 
@@ -68,6 +71,19 @@ async def load_charged_words(app: web.Application) -> None:
     app['charged_words'] = get_charged_words(BASE_DIR.joinpath('charged_dict'))
 
 
+async def init_cache(app: web.Application) -> None:
+    if app['config'].redis_host:
+        app['cache'] = Cache(
+            Cache.REDIS,
+            endpoint=app['config'].redis_host,
+            port=app['config'].redis_port,
+            namespace='jaundice',
+            serializer=JsonSerializer(),
+        )
+    else:
+        app['cache'] = None
+
+
 def configure_server(config: Optional[Config] = None) -> web.Application:
     if not config:
         config = Config()  # use default values
@@ -75,6 +91,7 @@ def configure_server(config: Optional[Config] = None) -> web.Application:
     app['config'] = config
     app.on_startup.append(create_morpher)
     app.on_startup.append(load_charged_words)
+    app.on_startup.append(init_cache)
     app.cleanup_ctx.append(create_aiohttp_session)
     app.add_routes([
         web.get('/', index, name='index'),

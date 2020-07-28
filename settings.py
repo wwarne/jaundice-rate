@@ -21,6 +21,8 @@ class Config:
     request_timeout: float = 2.0
     process_timeout: float = 3.0
     urls_limit: int = 10
+    redis_host: Optional[str] = None
+    redis_port: int = 6379
 
 def _create_parser() -> argparse.ArgumentParser:
     """Creates a parser to process command line arguments."""
@@ -53,6 +55,20 @@ def _create_parser() -> argparse.ArgumentParser:
         default=Config.urls_limit,
         env_var='NEWS_URL_LIMIT',
     )
+    parser.add_argument(
+        '--redis_host',
+        type=str,
+        help='Address of a redis server',
+        default=Config.redis_host,
+        env_var='NEWS_REDIS_HOST',
+    )
+    parser.add_argument(
+        '--redis_port',
+        type=int,
+        help='Port of a redis server',
+        default=Config.redis_port,
+        env_var='NEWS_REDIS_PORT',
+    )
     return parser
 
 def load_settings(cmd_params: Optional[List[str]] = None) -> Config:
@@ -66,4 +82,6 @@ def load_settings(cmd_params: Optional[List[str]] = None) -> Config:
         request_timeout=settings.request_timeout,
         process_timeout=settings.process_timeout,
         urls_limit=settings.urls_limit,
+        redis_host=settings.redis_host,
+        redis_port=settings.redis_port,
     )

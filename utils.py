@@ -1,17 +1,18 @@
 import asyncio
 import time
 from contextlib import contextmanager
-from typing import Generator, List, Dict, Union
+from typing import Generator, List, Dict, Union, Optional
 
 import aiohttp
 import async_timeout
 import pymorphy2
 
+from aiocache.base import BaseCache
 from adapters import ArticleNotFound, SANITIZERS
 from settings import logger
 from statuses import ProcessingStatus
 from text_tools import split_by_words, calculate_jaundice_rate
-
+from settings import logger
 
 @contextmanager
 def measure_time() -> Generator[None, None, None]:
@@ -34,7 +35,14 @@ async def process_article(session: aiohttp.ClientSession,
                           results: List[Dict[str, Union[str, int, float, None]]],
                           request_timeout: Union[float, int] = 2,
                           process_timeout: Union[float, int] = 3,
+                          cache: Optional[BaseCache] = None,
                           ) -> None:
+    if cache:
+        cached_result = await get_from_cache(cache, url)
+        if cached_result:
+            results.append(cached_result)
+            return
+
     result = {
         'status': None,
         'url': url,
@@ -58,4 +66,22 @@ async def process_article(session: aiohttp.ClientSession,
         result['status'] = ProcessingStatus.OK.value
         result['score'] = calculate_jaundice_rate(just_words, charged_words)
         result['word_count'] = len(just_words)
+        if cache:
+            await set_to_cache(cache, url, result)
     results.append(result)
+
+
+async def get_from_cache(cache: BaseCache, key: str) -> Optional[Dict]:
+    """Loads result from cache and ignore errors."""
+    try:
+        return await cache.get(key)
+    except Exception as e:
+        logger.error(e)
+        return None
+
+async def set_to_cache(cache: BaseCache, key: str, value: Dict) -> None:
+    """Save result to cache and ignore errors."""
+    try:
+        await cache.set(key, value, ttl=60 * 60)  # cache successful items for an hour
+    except Exception as e:
+        logger.error(e)
