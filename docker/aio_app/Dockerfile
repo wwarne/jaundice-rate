@@ -12,7 +12,7 @@ ENV PYTHONFAULTHANDLER=1 \
   # tini:
   TINI_VERSION=v0.19.0 \
   # poetry:
-  POETRY_VERSION=1.0.9 \
+  POETRY_VERSION=1.0.10 \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_CACHE_DIR='/var/cache/pypoetry'
 
