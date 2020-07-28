@@ -1,12 +1,13 @@
 import asyncio
 import time
 from contextlib import contextmanager
-from typing import Generator, List, Dict, Union
+from typing import Generator, List, Dict, Union, Optional
 
 import aiohttp
 import async_timeout
 import pymorphy2
 
+from aiocache.base import BaseCache
 from adapters import ArticleNotFound, SANITIZERS
 from settings import logger
 from statuses import ProcessingStatus
@@ -34,7 +35,14 @@ async def process_article(session: aiohttp.ClientSession,
                           results: List[Dict[str, Union[str, int, float, None]]],
                           request_timeout: Union[float, int] = 2,
                           process_timeout: Union[float, int] = 3,
+                          cache: Optional[BaseCache] = None,
                           ) -> None:
+    if cache:
+        cached_result = await cache.get(url)
+        if cached_result:
+            results.append(cached_result)
+            return
+
     result = {
         'status': None,
         'url': url,
@@ -58,4 +66,6 @@ async def process_article(session: aiohttp.ClientSession,
         result['status'] = ProcessingStatus.OK.value
         result['score'] = calculate_jaundice_rate(just_words, charged_words)
         result['word_count'] = len(just_words)
+        if cache:
+            await cache.set(url, result, ttl=60 * 60)  # cache successful items for an hour
     results.append(result)

@@ -40,6 +40,7 @@ async def index(request: web.Request) -> web.Response:
                 results,
                 request.app['config'].request_timeout,
                 request.app['config'].process_timeout,
+                request.app['cache'],
             )
     return web.json_response(results)
 
@@ -88,8 +89,9 @@ def configure_server(config: Optional[Config] = None) -> web.Application:
         config = Config()  # use default values
     app = web.Application()
     app['config'] = config
-    app.on_startup.append(create_morpher, init_cache)
+    app.on_startup.append(create_morpher)
     app.on_startup.append(load_charged_words)
+    app.on_startup.append(init_cache)
     app.cleanup_ctx.append(create_aiohttp_session)
     app.add_routes([
         web.get('/', index, name='index'),
