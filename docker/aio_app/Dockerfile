@@ -1,8 +1,12 @@
-FROM python:3.7.7-slim-buster
+FROM python:3.7.7-slim-buster AS development_build
 
 LABEL maintainer="wwarne@gmail.com"
 
-ENV PYTHONFAULTHANDLER=1 \
+ARG BUILD_ENV
+
+ENV BUILD_ENV=${BUILD_ENV} \
+  # python
+  PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
   # pip:
@@ -33,11 +37,23 @@ COPY ./poetry.lock ./pyproject.toml /code/
 
 # Project initialization:
 RUN set -ex \
-  && poetry install --no-dev --no-interaction --no-ansi \
-  && rm -rf "$POETRY_CACHE_DIR"
+  && apt-get update \
+  # we might need to install some package that needs to compile some C code.
+  && buildDeps=" \
+       build-essential \
+    " \
+  && apt-get install -y $buildDeps --no-install-recommends \
+  && echo "$BUILD_ENV" \
+  && poetry install \
+    $(if [ "$BUILD_ENV" = 'production' ]; then echo '--no-dev'; fi) \
+    --no-interaction --no-ansi \
+  # Cleaning poetry installation's cache for production:
+  && apt-get purge -y --auto-remove $buildDeps \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* \
+  && if [ "$BUILD_ENV" = 'production' ]; then rm -rf "$POETRY_CACHE_DIR"; fi
 
 
-# This is a special case. We need to run this script as an entry point:
+# This is a special case. We need to be sure this start script has proper permissions:
 COPY ./docker/aio_app/gunicorn.sh /docker-gunicorn.sh
 # Setting up proper permissions:
 RUN chmod +x '/docker-gunicorn.sh' \
@@ -52,5 +68,9 @@ EXPOSE 8080
 # We customize how our app is loaded with the custom entrypoint:
 ENTRYPOINT ["tini", "--"]
 CMD ["sh", "/docker-gunicorn.sh"]
+
+# copy source code inside the image only for prod images.
+# for dev images we will mount project directory into image
+FROM development_build AS production_build
 
 COPY --chown=web:web . /code

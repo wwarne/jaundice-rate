@@ -1,17 +1,18 @@
 ---
 
-# Default compose file for development and production.
-# Should be used directly in development.
-# Automatically loads `docker-compose.override.yml` if it exists.
-# No extra steps required.
+# Default compose file for production.
+
 
 version: "3.6"
 services:
   web:
-    image: "jundice-app"
+    image: "jundice-app:prod"
     build:
+      target: production_build
       context: .
       dockerfile: docker/aio_app/Dockerfile
+      args:
+        BUILD_ENV: production
     depends_on:
       - redis
     environment:
@@ -19,6 +20,7 @@ services:
     networks:
       - webnet
       - proxynet
+
   nginx:
     image: "nginx:1.19.1-alpine"
     volumes:
@@ -33,7 +35,6 @@ services:
     image: "redis:6.0.6-alpine"
     networks:
       - webnet
-
 
 networks:
   # Network for your proxy server and application to connect them,
