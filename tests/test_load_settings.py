@@ -8,6 +8,8 @@ from settings import load_settings, Config
     ('--request_timeout=10.5', 'request_timeout', 10.5),
     ('--process_timeout=5.0', 'process_timeout', 5.0),
     ('--urls_limit=100', 'urls_limit', 100),
+    ('--redis_host=http://supertest', 'redis_host', 'http://supertest'),
+    ('--redis_port=12345', 'redis_port', 12345),
 ])
 def test_process_cmd_arguments(cmd_param, attribute_name, result):
     config = load_settings(cmd_params=[cmd_param])
@@ -19,6 +21,8 @@ def test_process_cmd_arguments(cmd_param, attribute_name, result):
     ('NEWS_REQUEST_TIMEOUT', '10.5', 'request_timeout', 10.5),
     ('NEWS_PROCESS_TIMEOUT', '5.0', 'process_timeout', 5.0),
     ('NEWS_URL_LIMIT', '100', 'urls_limit', 100),
+    ('NEWS_REDIS_HOST', 'http://my-redis', 'redis_host', 'http://my-redis'),
+    ('NEWS_REDIS_PORT', '10042', 'redis_port', 10042),
 ])
 def test_reading_env_variables(monkeypatch, env_name, env_value, attribute_name, result):
     monkeypatch.setenv(env_name, env_value)
@@ -33,4 +37,6 @@ def test_config_key_names():
         'request_timeout',
         'process_timeout',
         'urls_limit',
+        'redis_host',
+        'redis_port'
     }

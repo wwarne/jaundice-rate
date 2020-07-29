@@ -18,3 +18,7 @@ services:
     volumes:
       # We only mount source code in development:
       - .:/code
+
+  redis:
+    ports:
+    - "7000:6379"

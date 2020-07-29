@@ -3,6 +3,7 @@ import asyncio
 import aiohttp
 import pytest
 
+from aiocache import Cache
 from statuses import ProcessingStatus
 from utils import process_article
 
@@ -121,3 +122,26 @@ class TestProcessArticle:
         assert results[0]['status'] == ProcessingStatus.OK.value
         assert results[0]['word_count'] == 3
         assert str(results[0]['score']) == '33.33'
+
+    async def test_cache(self, mocked_fetch, morpher):
+        mocked_fetch.side_effect = fetch_return_inosmi_html
+        results = []
+        cache = Cache(Cache.MEMORY)
+        await process_article(
+            session=None,
+            morph=morpher,
+            charged_words=['бодрость'],
+            url='http://localhost',
+            results=results,
+            cache=cache,
+        )
+        assert mocked_fetch.call_count == 1
+        await process_article(
+            session=None,
+            morph=morpher,
+            charged_words=['бодрость'],
+            url='http://localhost',
+            results=results,
+            cache=cache,
+        )
+        assert mocked_fetch.call_count == 1  # second call returned from cache
