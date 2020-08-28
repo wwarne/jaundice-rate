@@ -2,13 +2,11 @@
 
 # Default compose file for development.
 
-
 version: "3.6"
 services:
   web:
     image: "jundice-app:dev"
     build:
-      target: development_build
       context: .
       dockerfile: docker/aio_app/Dockerfile
       args:
@@ -27,6 +25,13 @@ services:
       # We only bind ports directly in development:
       - "9999:8080"
 
+  redis:
+    image: "redis:6.0.6-alpine"
+    networks:
+      - webnet
+    ports:
+      - "7000:6379"
+
   nginx:
     image: "nginx:1.19.1-alpine"
     volumes:
@@ -37,12 +42,6 @@ services:
       - web
     networks:
       - proxynet
-  redis:
-    image: "redis:6.0.6-alpine"
-    networks:
-      - webnet
-    ports:
-      - "7000:6379"
 
 
 networks:

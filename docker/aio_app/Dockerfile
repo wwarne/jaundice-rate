@@ -1,4 +1,4 @@
-FROM python:3.7.7-slim-buster AS development_build
+FROM python:3.7.7-slim-buster
 
 LABEL maintainer="wwarne@gmail.com"
 
@@ -29,7 +29,7 @@ COPY ./poetry.lock ./pyproject.toml /code/
 # Project initialization:
 RUN set -ex \
   && apt-get update \
-  # we might need to install some package that needs to compile some C code.
+  # we might need to install some packages that needs to compile some C code.
   && buildDeps=" \
        build-essential \
     " \
@@ -56,9 +56,5 @@ CMD [ "/usr/local/bin/gunicorn", \
       "--log-file=-", \
       "--worker-tmp-dir=/dev/shm" \
 ]
-
-# copy source code inside the image only for prod images.
-# for dev images we will mount project directory into image
-FROM development_build AS production_build
 
 COPY . /code
