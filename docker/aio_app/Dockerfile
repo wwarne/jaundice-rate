@@ -43,12 +43,9 @@ RUN set -ex \
   && apt-get clean && rm -rf /var/lib/apt/lists/* \
   && if [ "$BUILD_ENV" = 'production' ]; then rm -rf "$POETRY_CACHE_DIR"; fi
 
-# Running as non-root user:
-USER web
 # To not forget our port
 EXPOSE 8080
 
-# We customize how our app is loaded with the custom entrypoint:
 CMD [ "/usr/local/bin/gunicorn", \
       "server:gunicorn_app_factory", \
       "--worker-class=aiohttp.GunicornWebWorker", \
@@ -64,4 +61,4 @@ CMD [ "/usr/local/bin/gunicorn", \
 # for dev images we will mount project directory into image
 FROM development_build AS production_build
 
-COPY --chown=web:web . /code
+COPY . /code
