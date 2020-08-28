@@ -43,14 +43,6 @@ RUN set -ex \
   && apt-get clean && rm -rf /var/lib/apt/lists/* \
   && if [ "$BUILD_ENV" = 'production' ]; then rm -rf "$POETRY_CACHE_DIR"; fi
 
-
-# This is a special case. We need to be sure this start script has proper permissions:
-COPY ./docker/aio_app/gunicorn.sh /docker-gunicorn.sh
-# Setting up proper permissions:
-RUN chmod +x '/docker-gunicorn.sh' \
-  && groupadd -r web && useradd -d /code -r -g web web \
-  && chown web:web -R /code
-
 # Running as non-root user:
 USER web
 # To not forget our port
