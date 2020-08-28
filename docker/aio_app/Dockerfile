@@ -13,23 +13,14 @@ ENV BUILD_ENV=${BUILD_ENV} \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  # tini:
-  TINI_VERSION=v0.19.0 \
   # poetry:
   POETRY_VERSION=1.0.10 \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_CACHE_DIR='/var/cache/pypoetry'
 
-RUN apt-get update \
-  && apt-get install --no-install-recommends -y \
-     wget \
-  # Installing `tini` utility:
-  # https://github.com/krallin/tini
-  && wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini" \
-  && chmod +x /usr/local/bin/tini && tini --version \
-  # Installing `poetry` package manager:
-  # https://github.com/python-poetry/poetry
-  && pip install "poetry==$POETRY_VERSION" && poetry --version
+# Installing `poetry` package manager:
+# https://github.com/python-poetry/poetry
+RUN pip install "poetry==$POETRY_VERSION" && poetry --version
 
 # Copy only requirements, to cache them in docker layer:
 WORKDIR /code
@@ -66,8 +57,16 @@ USER web
 EXPOSE 8080
 
 # We customize how our app is loaded with the custom entrypoint:
-ENTRYPOINT ["tini", "--"]
-CMD ["sh", "/docker-gunicorn.sh"]
+CMD [ "/usr/local/bin/gunicorn", \
+      "server:gunicorn_app_factory", \
+      "--worker-class=aiohttp.GunicornWebWorker", \
+      "--workers=4", \
+      "--timeout=30", \
+      "--bind=0.0.0.0:8080", \
+      "--chdir=/code", \
+      "--log-file=-", \
+      "--worker-tmp-dir=/dev/shm" \
+]
 
 # copy source code inside the image only for prod images.
 # for dev images we will mount project directory into image
