@@ -23,14 +23,14 @@ services:
       - .:/code
     ports:
       # We only bind ports directly in development:
-      - "9999:8080"
+      - "8080:8080"
 
   redis:
     image: "redis:6.0.6-alpine"
     networks:
       - webnet
     ports:
-      - "7000:6379"
+      - "6379:6379"
 
   nginx:
     image: "nginx:1.19.1-alpine"
